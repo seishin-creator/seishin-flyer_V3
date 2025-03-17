@@ -147,13 +147,13 @@ const Flyer = () => {
           zIndex: 50,
         }}
       >
-        <button onClick={() => router.push("/Route")} style={{ margin: "0 10px", padding: "10px 20px" }}>
+        <button onClick={() => router.push("/Route")} style={{ margin: '0 10px', padding: '10px 20px', color: '#000', fontWeight: 'bold' }}>
           ルート
         </button>
-        <button onClick={() => window.open("/Coupon", "_blank")} style={{ margin: "0 10px", padding: "10px 20px" }}>
+        <button onClick={() => window.open("/Coupon", "_blank")} style={{ margin: '0 10px', padding: '10px 20px', color: '#000', fontWeight: 'bold' }}>
           クーポン
         </button>
-        <button onClick={() => window.open("/ShoppingMemo", "_blank")} style={{ margin: "0 10px", padding: "10px 20px" }}>
+        <button onClick={() => window.open("/ShoppingMemo", "_blank")} style={{ margin: '0 10px', padding: '10px 20px', color: '#000', fontWeight: 'bold' }}>
           買物メモ
         </button>
       </footer>
