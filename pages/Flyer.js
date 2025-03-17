@@ -2,16 +2,22 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
+const categories = [
+  { key: 'a', label: '肉' },
+  { key: 'b', label: '魚' },
+  { key: 'c', label: '野菜' },
+  { key: 'd', label: '特売' }
+];
+
 const Flyer = () => {
   const [storeName, setStoreName] = useState('');
   const [period, setPeriod] = useState('');
-  const [products, setProducts] = useState([]); // 商品画像リスト
-  const [selectedCategory, setSelectedCategory] = useState('tokubai');
-  const [shoppingMemo, setShoppingMemo] = useState([]); // 買物メモ用リスト
+  const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('d');
+  const [shoppingMemo, setShoppingMemo] = useState([]);
 
   const router = useRouter();
 
-  // 店舗名と期間を取得
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,11 +29,9 @@ const Flyer = () => {
         console.error("データの取得に失敗しました", error);
       }
     };
-
     fetchData();
   }, []);
 
-  // 選択されたカテゴリの商品画像を取得
   useEffect(() => {
     const fetchImages = async () => {
       try {
@@ -38,29 +42,24 @@ const Flyer = () => {
         console.error("画像の取得に失敗しました", error);
       }
     };
-
     fetchImages();
   }, [selectedCategory]);
 
-  // ローカルストレージから買物メモを取得
   useEffect(() => {
     const savedMemo = JSON.parse(localStorage.getItem('shoppingMemo')) || [];
     setShoppingMemo(savedMemo);
   }, []);
 
-  // 買物メモの追加・削除
   const toggleShoppingMemo = (file) => {
     const updatedMemo = shoppingMemo.includes(file) 
       ? shoppingMemo.filter(item => item !== file) 
       : [...shoppingMemo, file];
-
     setShoppingMemo(updatedMemo);
-    localStorage.setItem('shoppingMemo', JSON.stringify(updatedMemo)); // localStorage に保存
+    localStorage.setItem('shoppingMemo', JSON.stringify(updatedMemo));
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-      {/* ヘッダー（固定） */}
       <header style={{ flexShrink: 0 }}>
         <Image 
           src="/images/hed/header.png" 
@@ -68,32 +67,50 @@ const Flyer = () => {
           width={800} 
           height={200} 
           priority 
+          unoptimized
           style={{ objectFit: 'contain', width: '100%' }}
         />
-        <h1 style={{ textAlign: 'center', margin: '10px 0' }}>{storeName}</h1>
-        <p style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>{period}</p>
+        <h2 style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginTop: '10px' }}>
+            {storeName}
+        </h2>
         <Image 
           src="/images/Taitoru/Taitoru.jpg" 
           alt="タイトル" 
           width={800} 
           height={100} 
           priority 
+          unoptimized
           style={{ objectFit: 'contain', width: '100%' }}
         />
+        <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold', marginTop: '10px', color: '#333' }}>
+            {period}
+        </p>
+        {/* カテゴリ選択ボタン */}
+        <div style={{ textAlign: 'center', marginTop: '10px' }}>
+          {categories.map(category => (
+            <button 
+              key={category.key} 
+              onClick={() => setSelectedCategory(category.key)} 
+              style={{ margin: '5px', padding: '10px', fontSize: '16px' }}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
       </header>
 
-      {/* 商品画像エリア（スクロール可能にする） */}
       <div style={{ flexGrow: 1, overflowY: 'auto', padding: '10px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
           {products.length > 0 ? (
             products.map((file, index) => (
               <div key={index} style={{ textAlign: 'center' }}>
                 <Image 
-                  src={`/images/${selectedCategory}/${file}`} 
-                  alt={file} 
+                  src={file.toLowerCase()} 
+                  alt={file.split('/').pop().toLowerCase()} 
                   width={200} 
                   height={200} 
                   priority
+                  unoptimized
                   style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
                 />
                 <button 
@@ -110,7 +127,6 @@ const Flyer = () => {
         </div>
       </div>
 
-      {/* フッター（固定） */}
       <footer style={{ flexShrink: 0, backgroundColor: '#f8f8f8', padding: '10px', textAlign: 'center', borderTop: '1px solid #ddd' }}>
         <button onClick={() => router.push('/Route')} style={{ margin: '0 10px', padding: '10px 20px' }}>ルート</button>
         <button onClick={() => window.open('/Coupon', '_blank')} style={{ margin: '0 10px', padding: '10px 20px' }}>クーポン</button>
@@ -121,6 +137,7 @@ const Flyer = () => {
 };
 
 export default Flyer;
+
 
 
 

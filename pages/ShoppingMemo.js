@@ -6,7 +6,9 @@ const ShoppingMemo = () => {
   const [email, setEmail] = useState('example@example.com'); // ダミーアドレス表示
 
   useEffect(() => {
+    // localStorage のデータを取得し、ログ出力
     const memo = JSON.parse(localStorage.getItem('shoppingMemo')) || [];
+    console.log("取得した買物メモ:", memo);  // ← デバッグ用
     setShoppingMemo(memo);
   }, []);
 
@@ -48,11 +50,12 @@ const ShoppingMemo = () => {
             {shoppingMemo.map((file, index) => (
               <div key={index} style={{ textAlign: 'center' }}>
                 <Image 
-                  src={`/images/tokubai/${file}`}  
-                  alt={file} 
+                  src={file.toLowerCase()}  // 修正点: 画像パスを動的に
+                  alt={file.split('/').pop().toLowerCase()} 
                   width={200} 
                   height={200} 
                   priority
+                  unoptimized
                   style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
                 />
               </div>
@@ -80,6 +83,7 @@ const ShoppingMemo = () => {
 };
 
 export default ShoppingMemo;
+
 
 
 
