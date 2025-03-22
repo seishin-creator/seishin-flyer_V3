@@ -3,13 +3,19 @@ import Image from 'next/image';
 
 const ShoppingMemo = () => {
   const [shoppingMemo, setShoppingMemo] = useState([]);
-  const [email, setEmail] = useState('example@example.com'); // ダミーアドレス表示
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    // localStorage のデータを取得し、ログ出力
     const memo = JSON.parse(localStorage.getItem('shoppingMemo')) || [];
-    console.log("取得した買物メモ:", memo);  // ← デバッグ用
-    setShoppingMemo(memo);
+    const filtered = memo.filter(
+      (f) =>
+        f &&
+        typeof f === 'string' &&
+        !f.includes('tokubai') &&
+        !f.includes('extracted')
+    );
+    console.log('🧾 shoppingMemo raw data:', filtered);
+    setShoppingMemo(filtered);
   }, []);
 
   const sendEmail = async () => {
@@ -18,15 +24,13 @@ const ShoppingMemo = () => {
       return;
     }
 
-    const memoText = shoppingMemo.join("\n");
+    const memoText = shoppingMemo.join('\n');
 
     try {
       const response = await fetch('/api/sendMail', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, memo: memoText })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, memo: memoText }),
       });
 
       if (response.ok) {
@@ -34,57 +38,127 @@ const ShoppingMemo = () => {
       } else {
         alert('送信に失敗しました');
       }
-    } catch (error) {
-      console.error("メール送信エラー:", error);
+    } catch (err) {
+      console.error('送信エラー', err);
       alert('送信エラーが発生しました');
     }
   };
 
+  const sizeMap = {
+    A: { colSpan: 4, rowSpan: 4 },
+    B: { colSpan: 2, rowSpan: 4 },
+    C: { colSpan: 4, rowSpan: 2 },
+    D: { colSpan: 2, rowSpan: 2 },
+  };
+
+  const extractSize = (file) => {
+    const match = file.match(/_([ABCD])_/);
+    return match ? match[1] : 'D';
+  };
+
+  const extractOrder = (file) => {
+    const match = file.match(/_(\d+)\./);
+    return match ? parseInt(match[1]) : Infinity;
+  };
+
+  const generateLayoutUnits = (files) => {
+    const result = [];
+    const used = new Set();
+    const sorted = [...files].sort((a, b) => extractOrder(a) - extractOrder(b));
+
+    for (let i = 0; i < sorted.length; i++) {
+      if (used.has(sorted[i])) continue;
+
+      const size = extractSize(sorted[i]);
+      const unit = { files: [sorted[i]] };
+      used.add(sorted[i]);
+
+      if (size === 'B') {
+        for (let j = i + 1; j < sorted.length; j++) {
+          if (!used.has(sorted[j]) && extractSize(sorted[j]) === 'B') {
+            unit.files.push(sorted[j]);
+            used.add(sorted[j]);
+            break;
+          }
+        }
+      }
+
+      result.push(unit);
+    }
+
+    return result;
+  };
+
+  const layoutUnits = generateLayoutUnits(shoppingMemo);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      {/* 買物メモリスト（スクロール可能） */}
-      <div style={{ flexGrow: 1, overflowY: 'auto', padding: '20px', textAlign: 'center' }}>
-        <h2>買物メモ</h2>
-        {shoppingMemo.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px', justifyContent: 'center' }}>
-            {shoppingMemo.map((file, index) => (
-              <div key={index} style={{ textAlign: 'center' }}>
-                <Image 
-                  src={file.toLowerCase()}  // 修正点: 画像パスを動的に
-                  alt={file.split('/').pop().toLowerCase()} 
-                  width={200} 
-                  height={200} 
-                  priority
-                  unoptimized
-                  style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
-            ))}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      maxWidth: '390px',
+      margin: '0 auto',
+      overflowX: 'hidden'
+    }}>
+      <header style={{ flexShrink: 0 }}>
+        <Image
+          src="/images/ShoppingMemohed/ShoppingMemo_hed.jpeg"
+          alt="買物メモヘッダー"
+          width={800}
+          height={200}
+          priority
+          unoptimized
+          style={{ objectFit: 'contain', width: '100%' }}
+        />
+      </header>
+
+      <div style={{ flexGrow: 1, overflowY: 'auto', padding: '10px' }}>
+        {layoutUnits.length > 0 ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '5px',
+              paddingBottom: '60px',
+            }}
+          >
+            {layoutUnits.map((unit, index) =>
+              unit.files.map((file, i) => {
+                const size = extractSize(file);
+                const { colSpan, rowSpan } = sizeMap[size];
+                const folder = file.split('_')[0];
+                const imagePath = `/images/${folder}/${file}`;
+
+                return (
+                  <div
+                    key={`${index}_${i}`}
+                    style={{
+                      gridColumn: `span ${colSpan}`,
+                      gridRow: `span ${rowSpan}`,
+                      textAlign: 'center',
+                      position: 'relative',
+                    }}
+                  >
+                    <Image
+                      src={imagePath}
+                      alt={file}
+                      width={colSpan * 90}
+                      height={rowSpan * 90}
+                      priority
+                      unoptimized
+                      style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
+                    />
+                  </div>
+                );
+              })
+            )}
           </div>
         ) : (
-          <p>買物メモは空です</p>
+          <p style={{ textAlign: 'center' }}>買物メモは空です</p>
         )}
       </div>
-
-      {/* フッター（固定） */}
-      <footer style={{ flexShrink: 0, backgroundColor: '#f8f8f8', padding: '10px', textAlign: 'center', borderTop: '1px solid #ddd', position: 'sticky', bottom: 0 }}>
-        <input 
-          type="email" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '5px', marginRight: '10px', width: '250px' }}
-        />
-        <button onClick={sendEmail} style={{ padding: '10px 20px' }}>
-          買物メモを送信
-        </button>
-      </footer>
     </div>
   );
 };
 
 export default ShoppingMemo;
-
-
-
-
-  

@@ -1,47 +1,100 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const Route = () => {
+  const [storeNames, setStoreNames] = useState([]);
+  const [storeAddresses, setStoreAddresses] = useState([]);
+
   useEffect(() => {
-    // ルート情報を取得
-    fetch('/api/getRuleData')
-      .then(response => response.json())
-      .then(data => {
-        const storeAddress = encodeURIComponent(data.address || '');
-        if (!storeAddress) {
-          alert("店舗の住所が取得できませんでした。");
-          return;
-        }
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/getRuleData");
+        const data = await res.json();
 
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const lat = position.coords.latitude;
-              const lon = position.coords.longitude;
-              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lon}&destination=${storeAddress}&travelmode=driving`;
-
-              // 直接 Google マップを別タブで開く
-              window.open(googleMapsUrl, '_blank');
-              window.history.back(); // 元のページに戻る
-            },
-            (error) => {
-              alert("現在地が取得できませんでした。位置情報を許可してください。");
-              console.error("位置情報取得エラー:", error);
-              window.history.back(); // 元のページに戻る
-            }
-          );
+        if (data.storeNames && data.storeAddresses) {
+          setStoreNames(data.storeNames);
+          setStoreAddresses(data.storeAddresses);
         } else {
-          alert("お使いのブラウザでは現在地情報を取得できません。");
-          window.history.back(); // 元のページに戻る
+          alert("店舗情報の取得に失敗しました");
         }
-      })
-      .catch(error => {
-        console.error("住所の取得に失敗しました", error);
-        alert("ルート案内ができませんでした。");
-        window.history.back(); // 元のページに戻る
-      });
+      } catch (error) {
+        console.error("店舗データ取得エラー:", error);
+        alert("データの取得に失敗しました");
+      }
+    };
+
+    fetchData();
   }, []);
 
-  return null; // 画面には何も表示しない
+  const handleSelectStore = (index) => {
+    const address = storeAddresses[index];
+    if (!address) {
+      alert("店舗の住所が取得できませんでした。");
+      return;
+    }
+
+    const encodedAddress = encodeURIComponent(address);
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    window.open(mapsUrl, "_blank");
+  };
+
+  return (
+    <div 
+      style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        alignItems: "center", 
+        justifyContent: "center",
+        height: "100vh", 
+        textAlign: "center",
+        padding: "20px",
+      }}
+    >
+      <h2>どちらのお店に行きますか？</h2>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: storeNames.length > 4 ? "repeat(2, 1fr)" : "repeat(1, 1fr)",
+          gap: "15px",
+          justifyContent: "center",
+          marginTop: "20px",
+        }}
+      >
+        {storeNames.map((name, index) => (
+          <button
+            key={index}
+            onClick={() => handleSelectStore(index)}
+            style={{
+              width: "200px",
+              height: "100px",
+              border: "none",
+              cursor: "pointer",
+              backgroundColor: "#fff",
+              padding: "5px",
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              fontWeight: "bold",
+              borderRadius: "8px",
+              boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <Image
+              src={`/images/mapbutton/${name}.jpg`}
+              alt={name}
+              width={180}
+              height={90}
+              style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Route;
+

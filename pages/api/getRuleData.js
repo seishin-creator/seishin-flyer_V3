@@ -6,30 +6,42 @@ export default function handler(req, res) {
   try {
     // Excelファイルのパス
     const filePath = path.join(process.cwd(), 'public', 'rule.xlsx');
-    
-    // ファイルを読み込む
-    const fileBuffer = fs.readFileSync(filePath);
-    const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
 
-    // 最初のシートを取得
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
+    // Excelを読み込む
+    const workbook = xlsx.readFile(filePath);
+    const storeNames = [];
+    const storeAddresses = [];
 
-    // B1セル（店舗名）
-    const storeName = sheet['B1'] ? sheet['B1'].v : "店舗名未設定";
+    // 全シートを処理し B1（店舗名）と B4（住所） の値を取得
+    workbook.SheetNames.forEach(sheetName => {
+      const sheet = workbook.Sheets[sheetName];
+      const nameCell = sheet['B1']; // 店舗名
+      const addressCell = sheet['B4']; // 住所
 
-    // B3セル（期間）
-    const period = sheet['B3'] ? sheet['B3'].v : "期間未設定";
+      if (nameCell && nameCell.v) {
+        storeNames.push(nameCell.v);
+      } else {
+        storeNames.push(""); // 空欄の場合
+      }
 
-    // B4セル（住所）
-    const address = sheet['B4'] ? sheet['B4'].v : "住所未設定";
+      if (addressCell && addressCell.v) {
+        storeAddresses.push(addressCell.v);
+      } else {
+        storeAddresses.push(""); // 空欄の場合
+      }
+    });
 
-    // レスポンスを返す
-    res.status(200).json({ storeName, period, address });
+    // デバッグ用ログ（PowerShellに出力される）
+    console.log("取得した店舗名:", storeNames);
+    console.log("取得した住所:", storeAddresses);
 
+    // JSON形式でクライアントに返す
+    res.status(200).json({ storeNames, storeAddresses });
   } catch (error) {
-    console.error("Excelファイルの読み込みエラー:", error);
-    res.status(500).json({ error: "データを取得できませんでした。" });
+    console.error('Error reading Excel file:', error);
+    res.status(500).json({ error: 'Failed to load store data' });
   }
 }
+
+
 
