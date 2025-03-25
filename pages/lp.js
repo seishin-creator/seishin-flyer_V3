@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function Lp() {
   return (
@@ -13,7 +12,6 @@ export default function Lp() {
         <h1 className="text-xl font-semibold mb-2">🔔 SEISHIN チラシアプリ 新登場！</h1>
         <p className="text-gray-700 mb-4">ホーム画面に追加して、最新チラシをいつでもチェック！</p>
 
-        {/* ✅ 追加：画像を許される幅いっぱいに表示 */}
         <div className="mb-6">
           <Image
             src="/images/LP/forLP1.jpg"
@@ -26,9 +24,15 @@ export default function Lp() {
           />
         </div>
 
-        <Link href="/Flyer" className="text-lg text-blue-600 hover:underline">
+        {/* ✅ 別タブで開く a タグ */}
+        <a
+          href="/Flyer"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-lg text-blue-600 hover:underline"
+        >
           今すぐ使ってみる
-        </Link>
+        </a>
       </div>
     </div>
   );
