@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const Route = () => {
   const [storeNames, setStoreNames] = useState([]);
   const [storeAddresses, setStoreAddresses] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,9 +94,25 @@ const Route = () => {
           </button>
         ))}
       </div>
+
+      {/* 閉じるボタン */}
+      <div style={{ marginTop: '30px' }}>
+        <button
+          onClick={() => router.push('/Flyer')}
+          style={{
+            padding: '10px 20px',
+            fontSize: '16px',
+            backgroundColor: '#f00',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px'
+          }}
+        >
+          閉じる
+        </button>
+      </div>
     </div>
   );
 };
 
 export default Route;
-

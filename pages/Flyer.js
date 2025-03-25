@@ -8,7 +8,7 @@ const Flyer = () => {
     const [layout, setLayout] = useState([]);
     const [dailyButtons, setDailyButtons] = useState([]);
     const [specialButtons, setSpecialButtons] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('S2');
     const [shoppingMemo, setShoppingMemo] = useState([]);
 
     const router = useRouter();
@@ -19,7 +19,7 @@ const Flyer = () => {
                 const res = await fetch('/api/getRuleData');
                 const data = await res.json();
                 setStoreNames(data.storeNames || []);
-                setPeriod(data.period);
+                setPeriod(data.period || '');
             } catch (error) {
                 console.error("データの取得に失敗しました", error);
             }
@@ -128,17 +128,23 @@ const Flyer = () => {
                     ))}
                 </div>
 
-                <p style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold', marginTop: '5px', color: '#333' }}>{period}</p>
+                {/* ✅ 期間表示を追加（センター揃え） */}
+                {period && (
+                    <div style={{ textAlign: 'center', fontSize: '14px', marginTop: '2px', color: '#666' }}>
+                        {period}
+                    </div>
+                )}
 
-                <div style={{ textAlign: 'center', marginTop: '5px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {/* ✅ ボタン間の余白縮小 */}
+                <div style={{ textAlign: 'center', marginTop: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '2px' }}>
                         {dailyButtons.map((file, index) => (
-                            <Image key={index} src={`/images/dailybutton/${file}`} alt={file} width={85} height={40} priority unoptimized onClick={() => setSelectedCategory(`D${index + 1}`)} style={{ margin: '2px', cursor: 'pointer' }} />
+                            <Image key={index} src={`/images/dailybutton/${file}`} alt={file} width={85} height={40} priority unoptimized onClick={() => setSelectedCategory(`D${index + 1}`)} style={{ cursor: 'pointer' }} />
                         ))}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', marginTop: '5px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2px', gap: '2px' }}>
                         {specialButtons.map((file, index) => (
-                            <Image key={index} src={`/images/specialbutton/${file}`} alt={file} width={115} height={40} priority unoptimized onClick={() => setSelectedCategory(`S${index + 1}`)} style={{ margin: '2px', cursor: 'pointer' }} />
+                            <Image key={index} src={`/images/specialbutton/${file}`} alt={file} width={115} height={40} priority unoptimized onClick={() => setSelectedCategory(`S${index + 1}`)} style={{ cursor: 'pointer' }} />
                         ))}
                     </div>
                 </div>

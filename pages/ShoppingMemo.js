@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const ShoppingMemo = () => {
   const [shoppingMemo, setShoppingMemo] = useState([]);
-  const [email, setEmail] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const memo = JSON.parse(localStorage.getItem('shoppingMemo')) || [];
@@ -17,32 +18,6 @@ const ShoppingMemo = () => {
     console.log('🧾 shoppingMemo raw data:', filtered);
     setShoppingMemo(filtered);
   }, []);
-
-  const sendEmail = async () => {
-    if (!email || !email.includes('@')) {
-      alert('正しいメールアドレスを入力してください');
-      return;
-    }
-
-    const memoText = shoppingMemo.join('\n');
-
-    try {
-      const response = await fetch('/api/sendMail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, memo: memoText }),
-      });
-
-      if (response.ok) {
-        alert('買物メモを送信しました！');
-      } else {
-        alert('送信に失敗しました');
-      }
-    } catch (err) {
-      console.error('送信エラー', err);
-      alert('送信エラーが発生しました');
-    }
-  };
 
   const sizeMap = {
     A: { colSpan: 4, rowSpan: 4 },
@@ -98,8 +73,30 @@ const ShoppingMemo = () => {
       height: '100vh',
       maxWidth: '390px',
       margin: '0 auto',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      position: 'relative'
     }}>
+      {/* CLOSEボタン（ヘッダー内右上） */}
+      <button
+        onClick={() => router.push('/Flyer')}
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          backgroundColor: 'white',
+          color: 'red',
+          border: '1px solid red',
+          borderRadius: '4px',
+          padding: '2px 10px',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          zIndex: 999,
+        }}
+      >
+        CLOSE
+      </button>
+
+      {/* ヘッダー画像 */}
       <header style={{ flexShrink: 0 }}>
         <Image
           src="/images/ShoppingMemohed/ShoppingMemo_hed.jpeg"
@@ -112,6 +109,7 @@ const ShoppingMemo = () => {
         />
       </header>
 
+      {/* 商品一覧 */}
       <div style={{ flexGrow: 1, overflowY: 'auto', padding: '10px' }}>
         {layoutUnits.length > 0 ? (
           <div

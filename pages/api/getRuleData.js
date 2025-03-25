@@ -31,17 +31,20 @@ export default function handler(req, res) {
       }
     });
 
+    // ✅ 追加：南森町店のB3セル（期間）を取得
+    const sheet = workbook.Sheets['南森町店'];
+    const periodCell = sheet?.['B3'];
+    const period = periodCell?.v || '';
+
     // デバッグ用ログ（PowerShellに出力される）
     console.log("取得した店舗名:", storeNames);
     console.log("取得した住所:", storeAddresses);
+    console.log("取得した期間（南森町店B3）:", period);
 
     // JSON形式でクライアントに返す
-    res.status(200).json({ storeNames, storeAddresses });
+    res.status(200).json({ storeNames, storeAddresses, period });
   } catch (error) {
     console.error('Error reading Excel file:', error);
     res.status(500).json({ error: 'Failed to load store data' });
   }
 }
-
-
-
