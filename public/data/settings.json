@@ -1,0 +1,111 @@
+[
+  {
+    "label": "ブランドタイトル",
+    "text": "マルミヤストア",
+    "show": null,
+    "folder": true,
+    "path": "hed"
+  },
+  {
+    "label": "店舗名",
+    "text": "大阪店",
+    "show": true,
+    "folder": false
+  },
+  {
+    "label": "住所",
+    "text": "大阪市北区南森町2-1-29",
+    "show": true,
+    "folder": false
+  },
+  {
+    "label": "チラシ有効期間（開始）",
+    "text": "2025-04-01",
+    "show": true,
+    "folder": false,
+    "type": "date"
+  },
+  {
+    "label": "チラシ有効期間（終了）",
+    "text": "2025-05-06",
+    "show": true,
+    "folder": false,
+    "type": "date"
+  },
+  {
+    "label": "特売日ボタン1",
+    "dates": [
+      1744787896622,
+      1744874296622
+    ],
+    "show": false,
+    "folder": true,
+    "path": "D1",
+    "type": "multi-date"
+  },
+  {
+    "label": "特売日ボタン2",
+    "dates": [
+      1746256708221
+    ],
+    "show": true,
+    "folder": true,
+    "path": "D2",
+    "type": "multi-date"
+  },
+  {
+    "label": "特売日ボタン3",
+    "dates": [
+      1746083918752
+    ],
+    "show": true,
+    "folder": true,
+    "path": "D3",
+    "type": "multi-date"
+  },
+  {
+    "label": "特売日ボタン4",
+    "dates": [
+      1747984738862
+    ],
+    "show": false,
+    "folder": true,
+    "path": "D4",
+    "type": "multi-date"
+  },
+  {
+    "label": "企画ボタン1",
+    "text": "お花見",
+    "show": true,
+    "folder": true,
+    "path": "S1"
+  },
+  {
+    "label": "企画ボタン2",
+    "text": "新生活",
+    "show": true,
+    "folder": true,
+    "path": "S2"
+  },
+  {
+    "label": "おススメボタン",
+    "text": "おススメ",
+    "show": false,
+    "folder": false,
+    "clickable": true
+  },
+  {
+    "label": "クーポンボタン",
+    "text": "お得なクーポン",
+    "show": true,
+    "folder": false,
+    "clickable": true
+  },
+  {
+    "label": "クーポン画像",
+    "text": null,
+    "show": null,
+    "folder": true,
+    "path": "coupon"
+  }
+]

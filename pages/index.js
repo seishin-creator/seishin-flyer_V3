@@ -1,3 +1,4 @@
+// pages/index.js
 import Flyer from './Flyer';
 
 export default function Home() {

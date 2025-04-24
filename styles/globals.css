@@ -19,3 +19,26 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.tokubai-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  height: 80px;
+  margin-bottom: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.tokubai-btn {
+  height: 80px;
+  width: 240px;
+  position: relative;
+  flex-shrink: 0;
+  flex-grow: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
