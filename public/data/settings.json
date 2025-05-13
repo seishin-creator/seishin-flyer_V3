@@ -14,7 +14,7 @@
   },
   {
     "label": "住所",
-    "text": "大阪市北区南森町2-1-29",
+    "text": "堺市北区中百舌鳥町3-330-1-1211",
     "show": true,
     "folder": false
   },
@@ -38,7 +38,7 @@
       1744787896622,
       1744874296622
     ],
-    "show": false,
+    "show": true,
     "folder": true,
     "path": "D1",
     "type": "multi-date"
@@ -68,7 +68,7 @@
     "dates": [
       1747984738862
     ],
-    "show": false,
+    "show": true,
     "folder": true,
     "path": "D4",
     "type": "multi-date"
@@ -90,13 +90,13 @@
   {
     "label": "おススメボタン",
     "text": "おススメ",
-    "show": false,
+    "show": true,
     "folder": false,
     "clickable": true
   },
   {
     "label": "クーポンボタン",
-    "text": "お得なクーポン",
+    "text": "クーポン",
     "show": true,
     "folder": false,
     "clickable": true
